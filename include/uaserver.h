@@ -26,6 +26,7 @@
 #include <functional> // for std::function
 
 #include <nodemanagerbase.h>
+#include <BaseAccessControl.h>
 
 // forward decls from open62541
 struct UA_Server;
@@ -43,6 +44,7 @@ public:
 
     void linkRunningFlag (volatile OpcUa_Boolean* flag);
 
+    void linkAccessControl(BaseAccessControl *ac);
     //! Will start the server (in a separate thread). Non-blocking.
     void start();
 
@@ -53,6 +55,8 @@ public:
 private:
     UA_Server *m_server;
     NodeManagerBase* m_nodeManager;
+    BaseAccessControl *m_accessControl;
+
     std::thread m_open62541_server_thread;
 
     volatile OpcUa_Boolean* m_runningFlag;
