@@ -26,11 +26,11 @@
 #include <functional> // for std::function
 
 #include <nodemanagerbase.h>
-#include <BaseAccessControl.h>
 
 // forward decls from open62541
 struct UA_Server;
 struct UA_ServerConfig;
+class BaseAccessControl;
 
 class UaServer
 {

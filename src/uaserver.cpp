@@ -29,6 +29,7 @@
 #include <logit_logger.h>
 
 #include <LogIt.h>
+#include <BaseAccessControl.h>
 
 #ifdef HAS_SERVERCONFIG_LOADER
 #include <ServerConfig.hxx>
@@ -369,6 +370,7 @@ getUserExecutable(UA_Server *server, UA_AccessControl *ac,
 UaServer::UaServer() :
 m_server(nullptr),
 m_nodeManager(nullptr),
+m_accessControl(nullptr),
 m_runningFlag(nullptr),
 m_endpointPortNumber(4841)
 {
@@ -384,8 +386,11 @@ UaServer::~UaServer()
 
 void UaServer::linkAccessControl(BaseAccessControl *ac)
 {
+  LOG(Log::INF) << "Received AccessControl object.";
+
   if (ac != NULL)
   {
+    LOG(Log::INF) << "Assigning link to AccessControl object " << ac;
     m_accessControl = ac;
   }
 }
@@ -401,44 +406,14 @@ void UaServer::start()
     //UA_ServerConfig_setMinimal(config, m_endpointPortNumber, nullptr);
     UA_ServerConfig_setMinimal(config, m_endpointPortNumber, nullptr);
 
+    LOG(Log::INF) << "UaServer::start : Testing access control object. Linking callbacks";
 
     // an access control class has been linked
     if (m_accessControl)
     {
+      LOG(Log::INF) << "UaServer::start : Have a valid access control object. Linking callbacks";
       m_accessControl->link_callbacks(m_server);
     }
-//        UA_UsernamePasswordLogin logins[2] = {
-//            {UA_STRING_STATIC("peter"), UA_STRING_STATIC("peter123")},
-//            {UA_STRING_STATIC("nuno"), UA_STRING_STATIC("nuno123")}
-//        };
-//
-    /* Disable anonymous logins, enable two user/password logins */
-//    config->accessControl.clear(&config->accessControl);
-//    UA_StatusCode retval = UA_AccessControl_default(config, false,
-//               &config->securityPolicies[config->securityPoliciesSize-1].policyUri, 2, logins);
-//    if (retval != UA_STATUSCODE_GOOD)
-//    {
-//      LOG(Log::ERR) <<
-//      "UA_AccessControl_default returned: " << UaStatus(retval).toString().toUtf8();
-//    }
-//    else
-//    {
-//      LOG(Log::INF) <<
-//      "UA_AccessControl_default returned: " << UaStatus(retval).toString().toUtf8();
-//
-//    }
-//    config->accessControl.activateSession = activateSession;
-//    config->accessControl.getUserAccessLevel = getUserAccessLevel;
-//    config->accessControl.allowAddNode = allowAddNode;
-//    config->accessControl.allowAddReference = allowAddReference;
-//    config->accessControl.allowDeleteNode = allowDeleteNode;
-//    config->accessControl.allowDeleteReference = allowDeleteReference;
-//    config->accessControl.getUserExecutableOnObject = getUserExecutableOnObject;
-//    config->accessControl.allowBrowseNode = allowBrowseNode;
-//    config->accessControl.getUserExecutable = getUserExecutable;
-
-
-
 
 	// use LogIt logger for open62541
     initializeOpen62541LogIt();
